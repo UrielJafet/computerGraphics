@@ -86,6 +86,9 @@ public class Algoritmos extends JFrame{
         }
     }
 
+    // ==========================================
+    // Algoritmo de Bresenham
+    // ==========================================
     private void algoritmoBresenham(
             int x0,
             int y0,
