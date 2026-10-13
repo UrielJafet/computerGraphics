@@ -1,0 +1,4 @@
+Las correcciones que se realizaron para las deficiencias de la linea básica fueron:
+- Para la linea vertical (pendiente inexistente) se determino el rango de Y entre dos puntos, haciendo que el ciclo for recorra cada fila desde inicioY hasta finY. en cada iteración se pintaba un píxel en la columna fija de x0 y en la fila actual de y.
+- Linea de derecha a izquierda: si x0 > x1 se intercambian los puntos para recorrer de menor a mayor.
+- Linea empinada: para está corrección lo que se hace es recorrer sobre Y y despejar X en la misma ecuación "x = (y - b) / m".
