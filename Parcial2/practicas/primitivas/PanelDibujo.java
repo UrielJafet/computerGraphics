@@ -1,7 +1,6 @@
 package primitivas;
 
 import javax.swing.JPanel;
-import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.awt.Graphics;
 import java.awt.Insets;

@@ -108,25 +108,25 @@ public class Circunferencia extends JFrame{
     // Algoritmo Bresenham + Simetría de 8 lados
     // ==========================================
     private void circunferenciaBresenham(int xc, int yc, int r, Color color) {
-    int x = 0;
-    int y = r;
-    int d = 3 - 2 * r;          // decisión inicial
+        int x = 0;
+        int y = r;
+        int d = 3 - 2 * r;          // decisión inicial
 
-    dibujarPuntosSimetricos(xc, yc, x, y, color);
-
-    while (x < y) {
-        if (d < 0) {
-            // Solo avanza en x (píxel Este)
-            d = d + 4 * x + 6;
-        } else {
-            // Avanza en x y baja en y (píxel Sureste)
-            d = d + 4 * (x - y) + 10;
-            y--;
-        }
-        x++;
         dibujarPuntosSimetricos(xc, yc, x, y, color);
+
+        while (x < y) {
+            if (d < 0) {
+                // Solo avanza en x (píxel Este)
+                d = d + 4 * x + 6;
+            } else {
+                // Avanza en x y baja en y (píxel Sureste)
+                d = d + 4 * (x - y) + 10;
+                y--;
+            }
+            x++;
+            dibujarPuntosSimetricos(xc, yc, x, y, color);
+        }
     }
-}
 
     private void dibujarPuntosSimetricos(int xc, int yc, int x, int y, Color color){
         putPixel(xc + x, yc + y, color);
