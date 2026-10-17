@@ -1,0 +1,3 @@
+11 Algoritmo de Bresenham para dibujar circunferencias
+
+Las diferencias entre los algoritmos radican en que como obtienen la variable de decisión, ya que uno busca el punto medio para saber si esta dentro, fuera o sobre para elegir el pixel y bresenham se basa en el parámetro del error para encontrar la distancia al borde de la circunferencia y decide con base al signo.
