@@ -11,6 +11,8 @@ public abstract class Entity {
     protected double angulo; // en radianes
     protected double radio; // para colisiones y envolturas
 
+    protected boolean active = true;
+
     public Entity(double x, double y, double radio){
         this.x = x;
         this.y = y;

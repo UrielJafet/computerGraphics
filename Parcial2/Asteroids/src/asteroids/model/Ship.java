@@ -20,6 +20,9 @@ public class Ship extends Entity{
     private static final double[] LLAMA_X = {-4,0,4};
     private static final double[] LLAMA_Y = {8,18,8};
 
+    private static final double RECARGA = 0.25;
+    private double recarga;
+
     private final KeyMap key;
 
     private final int[] cx = new int[4];
@@ -30,6 +33,15 @@ public class Ship extends Entity{
     public Ship(double x, double y, KeyMap key){
         super(x,y,12);
         this.key = key;
+    }
+
+    public Bullet tryToShoot(){
+        if(!key.shot || recarga > 0) return null;
+        recarga = RECARGA;
+
+        double bx = x + Math.sin(angulo) * 12;
+        double by = y - Math.cos(angulo) * 12;
+        return new Bullet(bx, by, angulo, vx, vy);
     }
 
     @Override
@@ -56,6 +68,7 @@ public class Ship extends Entity{
             vy = vy /velocidad * VEL_MAXIMA;
         }
         
+        recarga -= dt;
         super.actualizar(dt);
     }
 
