@@ -1,4 +1,4 @@
-package src.asteroids.core;
+package asteroids.core;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;

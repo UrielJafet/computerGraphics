@@ -1,4 +1,4 @@
-package src.asteroids.input;
+package asteroids.input;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;

@@ -1,6 +1,6 @@
-package src.asteroids.graphics;
+package asteroids.graphics;
 
-import src.asteroids.core.Canvas;
+import asteroids.core.Canvas;
 
 public class Rasterizador {
     

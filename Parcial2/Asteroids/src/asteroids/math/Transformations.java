@@ -1,4 +1,4 @@
-package src.asteroids.math;
+package asteroids.math;
 
 /**
 * Transformaciones 2D. En pantalla Y crece hacia abajo, así que un ángulo
@@ -32,7 +32,7 @@ public final class Transformations {
             double y = ly[i] * escala;
 
             px[i] = (int) Math.round(x * c - y * s + tx);
-            py[i] = (int) Math.round(x * s + y * c + tx);
+            py[i] = (int) Math.round(x * s + y * c + ty);
         }
 
     }
