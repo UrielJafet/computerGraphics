@@ -10,6 +10,7 @@ public class KeyMap extends KeyAdapter{
     public volatile boolean right;
     public volatile boolean push;
     public volatile boolean shot;
+    public volatile boolean restart;
 
     @Override
     public void keyPressed(KeyEvent e){
@@ -37,6 +38,9 @@ public class KeyMap extends KeyAdapter{
                 break;
             case KeyEvent.VK_SPACE:
                 shot = pressed;
+                break;
+            case KeyEvent.VK_R:
+                restart = pressed;
                 break;
             default:
                 break;

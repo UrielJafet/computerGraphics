@@ -18,6 +18,15 @@ public class World {
     private final int alto;
     private int score;
     private int nivel = 1;
+    private enum State { PLAYING, GAME_OVER};
+
+    private static final int START_LIVES = 4;
+    private static final double RESPAWN_DELAY = 2.0;
+
+    private State state = State.PLAYING;
+    private int lives = START_LIVES;
+    private double respawnTimer;
+    private final KeyMap key;
 
     private final List<Entity> entities = new CopyOnWriteArrayList<>();
     private final List<Asteroids> asteroids = new CopyOnWriteArrayList<>();
@@ -31,21 +40,23 @@ public class World {
     public World(int ancho, int alto, KeyMap key){
         this.ancho = ancho;
         this.alto = alto;
-
+        this.key = key;
         ship = new Ship(ancho/2.0,alto/2.0,key);
-        entities.add(ship);
 
         createAsteroids(3 + nivel);
     }
 
+    public int getScore(){ return score;}
+    public int getLives(){ return lives;}
+
     public void actualizar(double dt){
-        if(bullets.size() < MAX_BULLETS){
+        if(state == State.PLAYING && ship.active && bullets.size() < MAX_BULLETS){
             Bullet nueva = ship.tryToShoot();
             if(nueva != null) bullets.add(nueva);
         }
-        for(Entity e : entities){
-            e.actualizar(dt);
-            e.envolver(ancho, alto);
+        if (ship.active) {
+            ship.actualizar(dt);
+            ship.envolver(ancho, alto);
         }
         for(Asteroids a: asteroids){
             a.actualizar(dt);
@@ -56,21 +67,25 @@ public class World {
             b.envolver(ancho, alto);
         }
         processCollision();
+
+        if(state == State.PLAYING && !ship.active){
+            respawnTimer -= dt;
+            if(respawnTimer <= 0) ship.reset(ancho/2.0,alto/2.0);
+        }
         bullets.removeIf(b -> !b.active);
         asteroids.removeIf(a -> !a.active);
-
         if(asteroids.isEmpty()){
             nivel++;
-            if(nivel <= 7){
-                createAsteroids(3 + nivel);
-            }
+            createAsteroids(Math.min(3 + nivel, 10));
+        }
+
+        if(state == State.GAME_OVER && key.restart){
+            restart();
         }
     }
 
     public void dibujar(Rasterizador r){
-        for(Entity e: entities){
-            e.dibujarEnvolvente(r, ancho, alto);
-        }
+        if(ship.active) ship.dibujarEnvolvente(r, ancho, alto);
         for(Asteroids a: asteroids){
             a.dibujarEnvolvente(r, ancho, alto);
         }
@@ -100,20 +115,23 @@ public class World {
                 if(!a.active) continue;
 
                 if(collide(a, b, ancho, alto)){
-                    a.active = false;
                     b.active = false;
+                    splitAsteroid(a, nuevos);
+                    break;
+                }
+            }
+        }
 
-                    if(a.getTam() == 3)
-                        score += 20;
-                    else if(a.getTam() == 2)
-                        score += 50;
-                    else if(a.getTam() == 1) 
-                        score += 100;
-                    System.out.println(score);
-                    if(a.getTam() > 1){
-                        nuevos.add(new Asteroids(a.x, a.y, a.getTam()-1));
-                        
-                    }
+        if(ship.active && !ship.isInvulnerability()){
+            for(Asteroids a : asteroids){
+                if(!a.active) continue;
+
+                if(collide(ship, a, ancho, alto)){
+                    ship.active = false;
+                    lives--;
+                    if(lives <= 0) state = State.GAME_OVER;
+                    else respawnTimer = RESPAWN_DELAY;
+                    splitAsteroid(a, nuevos);
                     break;
                 }
             }
@@ -121,16 +139,49 @@ public class World {
         asteroids.addAll(nuevos);
     }
 
+    private void splitAsteroid(Asteroids a, List<Asteroids> nuevos){
+        a.active = false;
+
+        if(a.getTam() == 3)
+            score += 20;
+        else if(a.getTam() == 2)
+            score += 50;
+        else if(a.getTam() == 1) 
+            score += 100;
+        System.out.println(score);
+
+        if(a.getTam() > 1){
+            nuevos.add(new Asteroids(a.x, a.y, a.getTam()-1));
+            nuevos.add(new Asteroids(a.x, a.y, a.getTam()-1));
+        }        
+    }
+
     private void createAsteroids(int ast){
         for(int i =  0; i < ast; i++){
-            double px, py;
+            double px, py, d2;
 
             do{
                 px = Math.random() * ancho;
                 py = Math.random() * alto;
-            } while ((px*px + py*py) < DISTANCIA_MINIMA);
+                double dx = px - ship.x;
+                double dy = py - ship.y;
+                d2 = dx * dx + dy* dy;
+            } while (d2 < DISTANCIA_MINIMA * DISTANCIA_MINIMA);
 
             asteroids.add(new Asteroids(px, py, 3));
         }
     }
+
+    private void restart(){
+        bullets.clear();
+        asteroids.clear();
+
+        lives =START_LIVES;
+        score = 0;
+        nivel = 1;
+        respawnTimer = 0;
+        ship.reset(ancho / 2.0, alto / 2.0);
+        createAsteroids(3 + nivel);
+        state = State.PLAYING;
+    }   
 }

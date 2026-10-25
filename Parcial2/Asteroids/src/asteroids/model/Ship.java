@@ -23,6 +23,9 @@ public class Ship extends Entity{
     private static final double RECARGA = 0.25;
     private double recarga;
 
+    private static final double INVULNERABILITY =3.0;
+    private double invulnerability;
+
     private final KeyMap key;
 
     private final int[] cx = new int[4];
@@ -33,6 +36,18 @@ public class Ship extends Entity{
     public Ship(double x, double y, KeyMap key){
         super(x,y,12);
         this.key = key;
+    }
+
+    public boolean isInvulnerability(){ return invulnerability > 0;}
+
+    public void reset(double cx, double cy){
+        x = cx; y = cy; 
+        vx = 0; vy = 0;
+        angulo = 0;
+
+        invulnerability = INVULNERABILITY;
+        recarga = 0;
+        active = true;
     }
 
     public Bullet tryToShoot(){
@@ -69,6 +84,8 @@ public class Ship extends Entity{
         }
         
         recarga -= dt;
+
+        if(isInvulnerability()) invulnerability -= dt;
         super.actualizar(dt);
     }
 
@@ -76,6 +93,8 @@ public class Ship extends Entity{
     public void dibujar(Rasterizador r, double desX, double desY){
         double tx = x + desX;
         double ty =  y + desY;
+        int rs = (int) (invulnerability * 10) % 2;
+        if(isInvulnerability() && rs != 0) return;
 
         // Rotacion + traslación de los vértices locales
         Transformations.transformar(CASCO_X, CASCO_Y, angulo, 1.0, tx, ty, cx, cy);
