@@ -13,6 +13,10 @@ public class Rasterizador {
         this.canvas = canvas;
     }
 
+    public void pixel(int x, int y, int color){
+        canvas.putPixel(x, y, color);
+    }
+
     // ==========================================
     // LÍNEA (punto medio)
     // ==========================================
