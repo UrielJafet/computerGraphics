@@ -1,3 +1,5 @@
 16 Grosor de línea en circunferencias
 
 las deficiencias que se encuentran al usar el concepto de grosor para linea es que depende de la brocha porque puede que al ser muy gruesa la forma del circulo se pierda o que se vean partes más delgadas que otras.
+
+0abaa982-4058-4813-8266-c42c585e15aa

@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import asteroids.input.KeyMap;
+import asteroids.sound.SoundManager;
 import asteroids.graphics.Rasterizador;
+import asteroids.graphics.Starfield;
 
 /*
 * Estado del juego: lista de entidades y reglas
@@ -27,6 +29,7 @@ public class World {
     private int lives = START_LIVES;
     private double respawnTimer;
     private final KeyMap key;
+    private double delayMusicaGameOver = -1;
 
     private final List<Entity> entities = new CopyOnWriteArrayList<>();
     private final List<Asteroids> asteroids = new CopyOnWriteArrayList<>();
@@ -36,12 +39,16 @@ public class World {
     private final List<Bullet> bullets = new CopyOnWriteArrayList<>();
 
     private final Ship ship;
+    private Starfield star;
+    private SoundManager audio;
 
-    public World(int ancho, int alto, KeyMap key){
+    public World(int ancho, int alto, KeyMap key, SoundManager audio){
         this.ancho = ancho;
         this.alto = alto;
         this.key = key;
+        this.audio = audio;
         ship = new Ship(ancho/2.0,alto/2.0,key);
+        star = new Starfield(ancho, alto);
 
         createAsteroids(3 + nivel);
     }
@@ -54,7 +61,10 @@ public class World {
     public void actualizar(double dt){
         if(state == State.PLAYING && ship.active && bullets.size() < MAX_BULLETS){
             Bullet nueva = ship.tryToShoot();
-            if(nueva != null) bullets.add(nueva);
+            if(nueva != null) {
+                bullets.add(nueva);
+                audio.play("fire");
+            }
         }
         if (ship.active) {
             ship.actualizar(dt);
@@ -68,6 +78,7 @@ public class World {
             b.actualizar(dt);
             b.envolver(ancho, alto);
         }
+        star.actualizar(dt);
         processCollision();
 
         if(state == State.PLAYING && !ship.active){
@@ -80,7 +91,13 @@ public class World {
             nivel++;
             createAsteroids(Math.min(3 + nivel, 10));
         }
-
+        if (delayMusicaGameOver >= 0) {
+            delayMusicaGameOver -= dt;
+            if (delayMusicaGameOver <= 0) {
+                audio.playLoop("load");
+                delayMusicaGameOver = -1;
+        }
+}
         if(state == State.GAME_OVER && key.restart){
             restart();
         }
@@ -88,6 +105,7 @@ public class World {
 
     public void dibujar(Rasterizador r){
         if(ship.active) ship.dibujarEnvolvente(r, ancho, alto);
+        star.dibujar(r, ship.vx, ship.vy);
         for(Asteroids a: asteroids){
             a.dibujarEnvolvente(r, ancho, alto);
         }
@@ -131,7 +149,12 @@ public class World {
                 if(collide(ship, a, ancho, alto)){
                     ship.active = false;
                     lives--;
-                    if(lives <= 0) state = State.GAME_OVER;
+                    if(lives <= 0) {
+                        state = State.GAME_OVER;
+                        audio.stop("music");
+                        audio.play("gameOver");
+                        delayMusicaGameOver = 1.5;
+                    }
                     else respawnTimer = RESPAWN_DELAY;
                     splitAsteroid(a, nuevos);
                     break;
@@ -143,6 +166,7 @@ public class World {
 
     private void splitAsteroid(Asteroids a, List<Asteroids> nuevos){
         a.active = false;
+        audio.play("explosion");
 
         if(a.getTam() == 3)
             score += 20;
@@ -150,11 +174,9 @@ public class World {
             score += 50;
         else if(a.getTam() == 1) 
             score += 100;
-        System.out.println(score);
-
         if(a.getTam() > 1){
-            nuevos.add(new Asteroids(a.x, a.y, a.getTam()-1));
-            nuevos.add(new Asteroids(a.x, a.y, a.getTam()-1));
+            nuevos.add(new Asteroids(a.x, a.y, a.getTam()-1, a.getPaleta()));
+            nuevos.add(new Asteroids(a.x, a.y, a.getTam()-1, a.getPaleta()));
         }        
     }
 
@@ -175,6 +197,9 @@ public class World {
     }
 
     private void restart(){
+        delayMusicaGameOver = -1;
+        audio.stop("load");
+        audio.playLoop("music");
         bullets.clear();
         asteroids.clear();
 

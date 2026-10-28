@@ -3,6 +3,7 @@ package asteroids.core;
 import asteroids.graphics.Rasterizador;
 import asteroids.graphics.Hud;
 import asteroids.model.World;
+import asteroids.sound.SoundManager;
 
 /*
 * Game loop con paso fijo de actualización (60 fps)
@@ -19,7 +20,7 @@ public class GameLoop implements Runnable{
     private final Rasterizador r;
     private final GamePanel panel;
     private final Hud hud;
-
+    
     private volatile boolean running = true;
 
     public GameLoop(World world, Canvas canvas, GamePanel panel, Hud hud){

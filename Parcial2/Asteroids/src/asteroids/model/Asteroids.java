@@ -5,7 +5,10 @@ import asteroids.math.Transformations;
 
 public class Asteroids extends Entity{
 
-    private static final int COLOR_ASTEROID = 0xE0CBCA;
+    private static final int[] RELLENOS = {0x4A3F3A, 0x3E4A52, 0x55402F, 0x2F3B3A};  // oscuros
+    private static final int[] BORDES = {0xE0CBCA, 0xB8C8D4, 0xD9B99B, 0xA9C4BF};  // claros
+
+    private final int paleta;
 
     private final int tam;
     private final double velGiro;
@@ -15,10 +18,14 @@ public class Asteroids extends Entity{
     private final int[] px;
     private final int[] py;
 
-    public Asteroids(double x, double y, int tam){
+    public Asteroids(double x, double y, int tam) {
+        this(x, y, tam, (int) (Math.random() * RELLENOS.length));
+    }
+
+    public Asteroids(double x, double y, int tam, int paleta){
         super(x,y,radioPorTamano(tam));
         this.tam = tam;
-
+        this.paleta = paleta;
         int n = (int) (Math.random() * 3) + 10;
 
         lx = new double[n];
@@ -54,6 +61,10 @@ public class Asteroids extends Entity{
         return tam;
     }
 
+    public int getPaleta(){
+        return paleta;
+    }
+
     @Override 
     public void actualizar(double dt){
         angulo += velGiro * dt;
@@ -66,6 +77,7 @@ public class Asteroids extends Entity{
         double ty = y + desY;
 
         Transformations.transformar(lx, ly, angulo, 1.0, tx, ty, px, py);
-        r.poligono(px, py, COLOR_ASTEROID);
+        r.rellenarPoligono(px, py, RELLENOS[paleta]);
+        r.poligono(px, py, BORDES[paleta]);
     }
 }
