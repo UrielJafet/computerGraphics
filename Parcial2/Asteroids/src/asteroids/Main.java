@@ -6,6 +6,7 @@ import javax.swing.SwingUtilities;
 import asteroids.input.KeyMap;
 import asteroids.model.World;
 import asteroids.core.*;
+import asteroids.graphics.Hud;
 
 
 public class Main {
@@ -17,6 +18,7 @@ public class Main {
             Canvas canvas = new Canvas(ANCHO, ALTO);
             KeyMap key = new KeyMap();
             GamePanel panel = new GamePanel(canvas, key);
+            Hud hud = new Hud(ANCHO, ALTO);
 
             JFrame frame = new JFrame("Asteroids");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -29,7 +31,7 @@ public class Main {
             panel.requestFocusInWindow();
 
             World world = new World(ANCHO, ALTO, key);
-            GameLoop loop = new GameLoop(world, canvas, panel);
+            GameLoop loop = new GameLoop(world, canvas, panel, hud);
 
             Thread thread = new Thread(loop, "game-loop");
             thread.setDaemon(true);

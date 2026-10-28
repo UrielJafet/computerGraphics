@@ -59,6 +59,14 @@ public class Ship extends Entity{
         return new Bullet(bx, by, angulo, vx, vy);
     }
 
+    public static void dibujarIcono(Rasterizador r, int x, int y, double escala){
+        int[] ix = new int[4];
+        int[] iy = new int[4];
+
+        Transformations.transformar(CASCO_X, CASCO_Y, 0, escala, x, y, ix, iy);
+        r.poligono(ix, iy, COLOR_CASCO);
+    }
+
     @Override
     public void actualizar(double dt){
         //Rotación

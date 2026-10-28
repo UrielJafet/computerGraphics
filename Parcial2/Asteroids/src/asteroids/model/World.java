@@ -48,6 +48,8 @@ public class World {
 
     public int getScore(){ return score;}
     public int getLives(){ return lives;}
+    public int getNivel(){ return nivel;}
+    public boolean isGameOver(){ return state == State.GAME_OVER; }
 
     public void actualizar(double dt){
         if(state == State.PLAYING && ship.active && bullets.size() < MAX_BULLETS){

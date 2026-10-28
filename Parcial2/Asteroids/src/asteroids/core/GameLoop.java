@@ -1,6 +1,7 @@
 package asteroids.core;
 
 import asteroids.graphics.Rasterizador;
+import asteroids.graphics.Hud;
 import asteroids.model.World;
 
 /*
@@ -17,13 +18,15 @@ public class GameLoop implements Runnable{
     private final Canvas canvas;
     private final Rasterizador r;
     private final GamePanel panel;
+    private final Hud hud;
 
     private volatile boolean running = true;
 
-    public GameLoop(World world, Canvas canvas, GamePanel panel){
+    public GameLoop(World world, Canvas canvas, GamePanel panel, Hud hud){
         this.world = world;
         this.canvas = canvas;
         this.panel = panel;
+        this.hud = hud;
         this.r = new Rasterizador(canvas);
     }
 
@@ -51,6 +54,7 @@ public class GameLoop implements Runnable{
 
             canvas.limpiar(COLOR_BACK);
             world.dibujar(r);
+            hud.dibujar(r, world);
             canvas.intercambiar();
             panel.repaint();
 
